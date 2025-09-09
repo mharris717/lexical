@@ -51,7 +51,6 @@ const elementExcludedProperties = new Set<string>([
   '__first',
   '__last',
   '__size',
-  '__dir',
 ]);
 const rootExcludedProperties = new Set<string>(['__cachedText']);
 const textExcludedProperties = new Set<string>(['__text']);
@@ -145,7 +144,7 @@ export function $createCollabNodeFromLexicalNode(
   } else if ($isLineBreakNode(lexicalNode)) {
     const map = new YMap();
     map.set('__type', 'linebreak');
-    collabNode = $createCollabLineBreakNode(map, parent);
+    collabNode = $createCollabLineBreakNode(map, parent, nodeType);
   } else if ($isDecoratorNode(lexicalNode)) {
     const xmlElem = new XmlElement();
     collabNode = $createCollabDecoratorNode(xmlElem, parent, nodeType);
@@ -208,7 +207,7 @@ export function $getOrInitCollabNodeFromSharedType(
       return $createCollabElementNode(sharedType, targetParent, type);
     } else if (sharedType instanceof YMap) {
       if (type === 'linebreak') {
-        return $createCollabLineBreakNode(sharedType, targetParent);
+        return $createCollabLineBreakNode(sharedType, targetParent, type);
       }
       return $createCollabTextNode(sharedType, '', targetParent, type);
     } else if (sharedType instanceof XmlElement) {
@@ -546,7 +545,7 @@ export function doesSelectionNeedRecovering(
     ) {
       recoveryNeeded = true;
     }
-  } catch (e) {
+  } catch (_e) {
     // Sometimes checking nor a node via getNode might trigger
     // an error, so we need recovery then too.
     recoveryNeeded = true;
